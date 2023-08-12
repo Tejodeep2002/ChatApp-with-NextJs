@@ -1,30 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Login from "./Login";
+import React, { ReactElement, useEffect, useState } from "react";
+import Login from "../Login/Login";
 import SignUp from "./SignUp";
-import { useRouter } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { addUser } from "@/lib/redux/Slices/user/userSlice";
 
-const LoginOptions: React.FC<any> = ({
-  cookies,
-}: {
-  cookies: { name: string; value: string };
-}) => {
+const LoginOptions:React.FC = ():ReactElement => {
   const [option, setOption] = useState<Boolean>(true);
-
-  const dispatch = useAppDispatch();
-
-  const router = useRouter();
-  useEffect(() => {
-    if (cookies !== undefined) {
-      dispatch(addUser(JSON.parse(cookies.value)));
-
-      router.push("/chats");
-      router.refresh();
-    }
-  }, [router]);
-
   return (
     <>
       <div className="w-full toggle">

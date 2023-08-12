@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface Chats{
-  
-}
-const initialState = {
+const initialState: {
+  chats: Chats[];
+  selectedChat: Chats | undefined;
+  notification: any[];
+} = {
   chats: [],
   selectedChat: undefined,
   notification: [],

@@ -16,7 +16,7 @@ export const PUT = async (request: NextRequest) => {
     try {
       const user = await prisma.user.update({
         where: {
-          id: decoded,
+          id: decoded.id,
         },
         data: {
           password: await passwordHasher(password),
@@ -25,6 +25,7 @@ export const PUT = async (request: NextRequest) => {
 
       return NextResponse.json(user);
     } catch (error) {
+      console.log(error)
       return NextResponse.json(
         { error: "Password not Updated" },
         { status: 400 }

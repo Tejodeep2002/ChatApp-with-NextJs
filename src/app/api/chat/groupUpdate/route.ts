@@ -1,20 +1,22 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { auth } from "@/lib/Middleware/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 
 export const PUT = async (request: NextRequest) => {
-  const token = new Headers(request.headers).get("authorization");
-
+  // const token = new Headers(request.headers).get("authorization");
+  const session = await getServerSession(authOptions);
   const { chatId, name, description, groupImage, groupAdmin } =
     await request.json();
 
-  if (token === null) {
-    return NextResponse.json({ error: "Unexpected Token " }, { status: 400 });
-  }
-  const authuser = await auth(token);
+  // if (token === null) {
+  //   return NextResponse.json({ error: "Unexpected Token " }, { status: 400 });
+  // }
+  // const authuser = await auth(token);
 
-  if (!authuser) {
+  if (!session) {
     return NextResponse.json("Not authorized, token failed", { status: 401 });
   } else if (!chatId || !name || !description || !groupImage || !groupAdmin) {
     return NextResponse.json("Please Fill all the fields");

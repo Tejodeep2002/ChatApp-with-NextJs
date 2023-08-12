@@ -1,8 +1,17 @@
 
 import ForgetPassword from "@/components/ForgetPassword/ForgetPassword";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+
 import React from "react";
 
-const page = () => {
+const page = async() => {
+  const session = await getServerSession(authOptions);
+
+  if (session) {
+    redirect("/");
+  }
   return (
     <div className="w-full m-auto flex flex-col justify-center items-center max-w-xl">
       <div className="w-full flex justify-center p-3 bg-white  mx-10 my-4 border-2 rounded-lg">

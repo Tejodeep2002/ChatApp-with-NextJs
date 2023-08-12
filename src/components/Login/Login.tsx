@@ -1,15 +1,16 @@
-"use Client";
+"use client";
 import { useUserLoginMutation } from "@/lib/redux/api/apiUserSlice";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { signIn } from "next-auth/react";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState<String>();
-  const [password, setPassword] = useState<String>();
+  const [email, setEmail] = useState<string>();
+  const [password, setPassword] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const [userLogin, { isLoading, isError, isSuccess }] = useUserLoginMutation();
+  const [userLogin, { isLoading }] = useUserLoginMutation();
 
   const submitHandler = async () => {
     setLoading(true);
@@ -19,27 +20,32 @@ const Login: React.FC = () => {
       return;
     }
 
-    const data = await userLogin({ email, password });
-
-    if (isSuccess) {
+    try {
+      // await userLogin({ email, password }).unwrap();
+      const promise = await signIn("credentials", {
+        email,
+        password,
+      });
+      console.log(promise);
       toast.success("Login successfull");
-
       setLoading(false);
-
-      router.push("/chats");
-      router.refresh();
-    } else{
-      toast.error(`${data.error.data.error}`);
+    } catch (error) {
+      console.log(error);
+      toast.error(`${error}`);
       setLoading(false);
     }
-    
-    if(isError){
-      
-    }
+  };
+
+  const signInWithGoogle = async () => {
+    await signIn("google");
   };
 
   const forgetPassword = async () => {
     router.push("/forget-password");
+  };
+
+  const signUp = () => {
+    router.push("/signup");
   };
 
   return (
@@ -79,7 +85,7 @@ const Login: React.FC = () => {
           className=" text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
           onClick={submitHandler}
         >
-          {isLoading ? (
+          {loading ? (
             <svg
               aria-hidden="true"
               className="inline w-6 h-6 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-700"
@@ -105,12 +111,9 @@ const Login: React.FC = () => {
           <button
             type="button"
             className="text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-            onClick={() => {
-              setEmail("guest@email.com");
-              setPassword("123456");
-            }}
+            onClick={signUp}
           >
-            Get Guest User Credentials
+            Sign Up
           </button>
           <button
             type="button"
@@ -120,6 +123,30 @@ const Login: React.FC = () => {
             Forget Password
           </button>
         </div>
+      </div>
+      <hr></hr>
+
+      <div>
+        <button
+          type="button"
+          className="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
+          onClick={signInWithGoogle}
+        >
+          <svg
+            className="w-4 h-4 mr-2"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 18 19"
+          >
+            <path
+              fillRule="evenodd"
+              d="M8.842 18.083a8.8 8.8 0 0 1-8.65-8.948 8.841 8.841 0 0 1 8.8-8.652h.153a8.464 8.464 0 0 1 5.7 2.257l-2.193 2.038A5.27 5.27 0 0 0 9.09 3.4a5.882 5.882 0 0 0-.2 11.76h.124a5.091 5.091 0 0 0 5.248-4.057L14.3 11H9V8h8.34c.066.543.095 1.09.088 1.636-.086 5.053-3.463 8.449-8.4 8.449l-.186-.002Z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Sign in with Google
+        </button>
       </div>
     </div>
   );

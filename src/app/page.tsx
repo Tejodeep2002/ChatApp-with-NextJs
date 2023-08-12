@@ -1,16 +1,27 @@
-import LoginOptions from "@/components/Home/LoginOptions";
-import { cookies } from 'next/headers'
-const Home = () => {
-  const cookieStore = cookies()
+import SideBar from "@/components/Chats/SideBar";
+import React, { useState } from "react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import Modals from "@/components/ui/SettingsModal";
+import MidSection from "@/components/Chats/MidSection/MidSection";
+import ChatArea from "@/components/Chats/ChatArea";
+
+const page = async () => {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/login");
+  }
+  console.log("Chat", session.user);
+
   return (
-    <div className="w-full m-auto flex flex-col justify-center items-center max-w-xl">
-      <div className="w-full flex justify-center p-3 bg-white mx-10 my-4 border-2 rounded-lg">
-        <span className="text-4xl font-WorkSans color-black">Talk-A-Tive</span>
-      </div>
-      <div className="bg-white w-full p-4 rounded-lg border-2">
-        <LoginOptions cookies={cookieStore.get('userInfo')}/>
-      </div>
+    <div className="w-full h-screen flex">
+      <SideBar />
+      <MidSection />
+      <ChatArea />
     </div>
   );
 };
-export default Home;
+
+export default page;

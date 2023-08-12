@@ -1,58 +1,53 @@
 "use client";
-import axios from "axios";
+import { useForgetPasswordMutation } from "@/lib/redux/api/apiUserSlice";
+
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
 const ForgetPassword: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState<String>();
+  const [email, setEmail] = useState<string>();
 
+  const [forgetPassword, { isLoading }] = useForgetPasswordMutation();
   const submit = async () => {
-    setLoading(true);
     if (!email) {
       toast.warning("Please Fill all the Fields");
-      setLoading(false);
+
       return;
     }
 
     try {
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-        },
-      };
-
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/user/forgetPassword`,
-        { email },
-        config
-      );
+      await forgetPassword({ email }).unwrap();
 
       toast.success("Reset Link Send on the email");
-      setLoading(false);
-    } catch (error) {
-      toast.error("Error occor!!!");
-      setLoading(false);
+    } catch (error: any) {
+      toast.error(`${error.data.error}`);
     }
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2">
-        <span className="font-medium">Email</span>
-        <input
-          type="text"
-          placeholder="Enter Your Email"
-          className="w-full p-2 border rounded-md"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
+    <div>
+      <form>
+        <div className="mb-3">
+          <label className="block mb-2  font-medium text-gray-900 dark:text-white">
+            Email address
+          </label>
+          <input
+            type="email"
+            id="email"
+            onChange={(e) => setEmail(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="john.doe@company.com"
+            required
+          />
+        </div>
+      </form>
 
       <button
-        className=" w-full p-2 bg-sky-600 border rounded-md text-white font-semibold hover:bg-sky-700 "
+        type="button"
+        className=" text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
         onClick={submit}
       >
-        {loading ? (
+        {isLoading ? (
           <svg
             aria-hidden="true"
             className="inline w-6 h-6 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-700"
@@ -70,7 +65,7 @@ const ForgetPassword: React.FC = () => {
             />
           </svg>
         ) : (
-          "Send Request"
+          "Sign Up"
         )}
       </button>
     </div>

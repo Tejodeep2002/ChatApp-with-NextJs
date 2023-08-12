@@ -1,16 +1,6 @@
-import { NextResponse } from "next/server";
-
 import prisma from "@/lib/prisma/prisma";
 import { verifyJwtToken } from "../token/token";
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  pic: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
 
 export const auth = async (authToken: string) => {
   if (authToken && authToken.startsWith("Bearer")) {

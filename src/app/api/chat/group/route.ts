@@ -1,7 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { auth } from "@/lib/Middleware/auth";
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 interface GroupBody {
   name: string;
@@ -11,23 +12,22 @@ interface GroupBody {
 }
 
 export const POST = async (request: NextRequest) => {
-  const token = new Headers(request.headers).get("authorization");
+  // const token = new Headers(request.headers).get("authorization");
+  const session = await getServerSession(authOptions);
   const { name, description, groupImage, users }: GroupBody =
     await request.json();
 
-  if (token === null) {
-    return NextResponse.json({ error: "Unexpected Token " }, { status: 400 });
-  }
+  // if (token === null) {
+  //   return NextResponse.json({ error: "Unexpected Token " }, { status: 400 });
+  // }
 
-  const authuser = await auth(token);
+  // const authuser = await auth(token);
 
-  if (!authuser) {
+  if (!session?.user.id) {
     return NextResponse.json("Not authorized, token failed", { status: 401 });
   } else if (!name || !users) {
     return NextResponse.json("Please Fill all the fields");
   }
-
-  
 
   if (
     typeof name === "string" &&
@@ -41,7 +41,7 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
-    users.push(authuser.id);
+    users.push(session.user.id);
 
     // console.log(users)
     // console.log(users.map((usersId) => ({ id: usersId })))
@@ -57,7 +57,7 @@ export const POST = async (request: NextRequest) => {
             connect: users.map((usersId: string) => ({ id: usersId })),
           },
           groupAdmin: {
-            connect: { id: authuser.id },
+            connect: { id: session.user.id },
           },
         },
       });
@@ -98,8 +98,7 @@ export const POST = async (request: NextRequest) => {
       console.log(FullChat[0]);
       return NextResponse.json(FullChat[0]);
     } catch (error) {
-
-      console.log(error)
+      console.log(error);
       return NextResponse.json(
         { error: "Error Happened!! Group not created Error Happened" },
         { status: 400 }

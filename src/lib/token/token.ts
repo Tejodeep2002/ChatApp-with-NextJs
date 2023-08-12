@@ -16,6 +16,6 @@ export const verifyJwtToken = (token: string): jwt.JwtPayload | string => {
 
 export const resetJwtToken = (id: string): string => {
   return jwt.sign({ id }, secretKey, {
-    expiresIn: 60 * 3,
+    expiresIn: 60 * 5,
   });
 };
