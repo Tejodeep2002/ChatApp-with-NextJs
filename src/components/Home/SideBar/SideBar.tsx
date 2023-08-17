@@ -3,55 +3,52 @@ import { useUserInfoQuery } from "@/lib/redux/api/apiUserSlice";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faGear, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 
-import { Button, CircularButton } from "@/components/ui/Button";
-import SettingsModal from "../ui/SettingsModal";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  pic: string;
-  token: string;
-}
+import { Button } from "@/components/ui/Button";
+import SettingsModal from "./SettingsModal";
+import Image from "next/image";
 
 const SideBar: FC = () => {
   const [isSetting, setIsSettings] = useState<boolean>(false);
-  const { data, isLoading } = useUserInfoQuery(undefined);
-
-  console.log(data);
+  const { data } = useUserInfoQuery(undefined);
 
   return (
     <>
-      <div className="w-12 h-screen bg-slate-300  flex justify-between p-5 flex flex-col items-center">
+      <div className="w-12 h-screen bg-slate-300  justify-between p-5 flex flex-col items-center dark:bg-slate-700">
         <div className="flex flex-col gap-5 items-center">
-          <Button variant="small">
+          <Button variant="pink" size='sm'>
             <FontAwesomeIcon
               icon={faComment}
               style={{ color: "", width: "24px", height: "24px" }}
+              className="dark:text-white"
             />
           </Button>
 
-          <Button variant="small">
+          <Button variant="pink" size='sm'>
             <FontAwesomeIcon
               icon={faPhone}
               style={{ color: "", width: "24px", height: "24px" }}
+              className="dark:text-white"
             />
           </Button>
         </div>
         <div className=" flex flex-col gap-7 items-center">
-          <Button variant="small" onClick={() => setIsSettings(true)}>
+          <Button variant="pink" size='sm' onClick={() => setIsSettings(true)}>
             <FontAwesomeIcon
               icon={faGear}
-              style={{ color: "", width: "24px", height: "24px" }}
+              style={{ width: "24px", height: "24px" }}
+              className="dark:text-white"
             />
           </Button>
-          <Button variant="small">
-            <img
+          <Button variant="pink" size='sm'>
+            <Image
               src={data?.pic}
-              className="w-7 h-7 bg-white border border-black border-2 rounded-full"
-              srcSet=""
+              width={7}
+              height={7}
+              quality={75}
+              alt={"profile"}
+              className="w-7 h-7 bg-white dark:border-white border-black border-2 rounded-full"
             />
           </Button>
         </div>

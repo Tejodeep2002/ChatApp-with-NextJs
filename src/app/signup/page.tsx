@@ -1,5 +1,5 @@
 // import LoginOptions from "@/components/Home/LoginOptions";
-import SignUp from "@/components/Home/SignUp";
+import SignUp from "@/components/SignUp/SignUp";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";

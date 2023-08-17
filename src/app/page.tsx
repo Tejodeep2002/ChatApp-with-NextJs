@@ -1,14 +1,15 @@
-import SideBar from "@/components/Chats/SideBar";
-import React, { useState } from "react";
+import React from "react";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Modals from "@/components/ui/SettingsModal";
-import MidSection from "@/components/Chats/MidSection/MidSection";
-import ChatArea from "@/components/Chats/ChatArea";
+import SideBar from "@/components/Home/SideBar/SideBar";
+import MidSection from "@/components/Home/MidSection/MidSection";
+import ChatArea from "@/components/Home/ChatArea/ChatArea";
 
 const page = async () => {
   const session = await getServerSession(authOptions);
+
+ 
 
   if (!session) {
     redirect("/login");
@@ -16,7 +17,7 @@ const page = async () => {
   console.log("Chat", session.user);
 
   return (
-    <div className="w-full h-screen flex">
+    <div className="w-full h-screen flex dark">
       <SideBar />
       <MidSection />
       <ChatArea />

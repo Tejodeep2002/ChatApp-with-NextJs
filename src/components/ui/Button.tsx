@@ -2,18 +2,18 @@ import { cn } from "@/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
 import React, { ButtonHTMLAttributes, FC } from "react";
 
-const buttonVariants = cva("w-14 h-9  rounded-md", {
+const buttonVariants = cva("rounded-md flex items-center justify-center", {
   variants: {
     variant: {
-      default: "bg-white border border-black hover:bg-red-500 ",
-      small:
-        "w-10 h-10 bg-transparent hover:bg-red-500 flex items-center justify-center",
-      circular: "border-black hover:rounded-md hover:bg-gray-400 dark:bg-black",
-      transperant: "w-fit p-2 bg-transparent hover:bg-red-500",
+      red: "hover:bg-red-500 ",
+      pink: "hover:bg-pink-500 ",
+      blue: "hover:bg-blue-500 ",
     },
-  },
-  defaultVariants: {
-    variant: "default",
+    
+    size: {
+      base: "w-14 h-9",
+      sm: "w-10 h-10",
+    },
   },
 });
 
@@ -25,10 +25,15 @@ export const Button: FC<ButtonProps> = ({
   children,
   className,
   variant,
+
+  size,
   ...props
 }) => {
   return (
-    <button className={cn(buttonVariants({ variant, className }))} {...props}>
+    <button
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    >
       {children}
     </button>
   );

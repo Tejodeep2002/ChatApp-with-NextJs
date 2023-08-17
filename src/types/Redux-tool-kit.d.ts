@@ -8,7 +8,7 @@ interface User {
   updatedAt?: Date;
 }
 
-// Chat Slice
+//Message
 interface Message {
   id: string;
   sender: User;
@@ -20,8 +20,8 @@ interface Message {
   updatedAt: Date;
 }
 
-
-interface Chats {
+// Chat
+interface Chat {
   id: string;
   chatName: string;
   description?:string,

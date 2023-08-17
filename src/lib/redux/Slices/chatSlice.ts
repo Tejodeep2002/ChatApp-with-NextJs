@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: {
-  chats: Chats[];
-  selectedChat: Chats | undefined;
+  chats: Chat[];
+  selectedChat: Chat | undefined;
   notification: any[];
 } = {
   chats: [],

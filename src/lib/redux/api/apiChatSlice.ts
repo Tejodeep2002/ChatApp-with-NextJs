@@ -28,9 +28,13 @@ export const apiChatSlice = createApi({
         method: "POST",
         body: body,
       }),
+      async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded }) {
+        const response: any = await cacheDataLoaded;
+        dispatch(updateChats(response.data));
+      },
       invalidatesTags: ["Chat"],
     }),
-    fetchChats: builder.query<Chats,undefined>({
+    fetchChats: builder.query<Chats, undefined>({
       query: () => ({
         url: "/",
         method: "GET",

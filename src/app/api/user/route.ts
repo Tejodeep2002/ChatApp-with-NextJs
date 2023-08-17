@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { passwordHasher } from "@/lib/passwordHasher/hasher";
-import { generateJwtToken } from "@/lib/token/token";
+
 import { auth } from "@/lib/Middleware/auth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -103,25 +103,7 @@ export const POST = async (request: NextRequest) => {
     });
 
     if (user) {
-      const responce = NextResponse.json(
-        {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          pic: user.pic,
-          token: generateJwtToken(user.id),
-        },
-        { status: 201 }
-      );
-
-      responce.cookies.set({
-        name: "token",
-        value: generateJwtToken(user.id),
-        httpOnly: true,
-        maxAge: 60 * 60,
-      });
-
-      return responce;
+      return NextResponse.json({ success: " User Created" }, { status: 200 });
     } else {
       return NextResponse.json(
         { error: "failed to create User" },
