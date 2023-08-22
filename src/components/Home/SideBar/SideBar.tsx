@@ -1,23 +1,25 @@
 "use client";
-import { useUserInfoQuery } from "@/lib/redux/api/apiUserSlice";
+import { useLazyUserInfoQuery } from "@/lib/redux/api/apiUserSlice";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faGear, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { FC, useState } from "react";
-
+import React, { FC, useState,useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import SettingsModal from "./SettingsModal";
-import Image from "next/image";
 
-const SideBar: FC = () => {
+const SideBar: FC<any> = ({session}) => {
   const [isSetting, setIsSettings] = useState<boolean>(false);
-  const { data } = useUserInfoQuery(undefined);
+  const [trigger, result, lastPromiseInfo] = useLazyUserInfoQuery();
+
+  useEffect(() => {
+    trigger(session.token)
+  }, [])
 
   return (
     <>
       <div className="w-12 h-screen bg-slate-300  justify-between p-5 flex flex-col items-center dark:bg-slate-700">
         <div className="flex flex-col gap-5 items-center">
-          <Button variant="pink" size='sm'>
+          <Button variant="pink" size="sm">
             <FontAwesomeIcon
               icon={faComment}
               style={{ color: "", width: "24px", height: "24px" }}
@@ -25,7 +27,7 @@ const SideBar: FC = () => {
             />
           </Button>
 
-          <Button variant="pink" size='sm'>
+          <Button variant="pink" size="sm">
             <FontAwesomeIcon
               icon={faPhone}
               style={{ color: "", width: "24px", height: "24px" }}
@@ -34,16 +36,16 @@ const SideBar: FC = () => {
           </Button>
         </div>
         <div className=" flex flex-col gap-7 items-center">
-          <Button variant="pink" size='sm' onClick={() => setIsSettings(true)}>
+          <Button variant="pink" size="sm" onClick={() => setIsSettings(true)}>
             <FontAwesomeIcon
               icon={faGear}
               style={{ width: "24px", height: "24px" }}
               className="dark:text-white"
             />
           </Button>
-          <Button variant="pink" size='sm'>
+          <Button variant="pink" size="sm">
             <img
-              src={data?.pic}
+              src={result.pic}
               width={7}
               height={7}
               alt={"profile"}

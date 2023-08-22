@@ -43,25 +43,26 @@ export const authOptions: NextAuthOptions = {
           }
 
           //Check email and password is valid
-          
-          const user = await prisma.user.findUnique({
-            where: {
-              email: credentials.email,
-            },
-          });
 
-          if (
-            user &&
-            (await passwordCompare(credentials.password, user.password))
-          ) {
-            
-            return {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              images: user.pic,
-              password: user.password,
-            };
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/user/login`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+              }),
+            }
+          );
+
+          const user = await res.json();
+
+          console.log("Credential", user);
+          if (user) {
+            return user;
           } else {
             return null;
           }
@@ -77,35 +78,33 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      if (!user) {
-        throw new Error(
-          "Authentication failed. Please check your credentials."
-        );
+      if (user) {
+        return true;
+      } else {
+        return false;
       }
-      return true;
     },
     async jwt({ token, user }) {
       if (user) {
         return {
           ...token,
-          id: user.id,
-          image: user.image,
+          ...user,
         };
       }
+
       return token;
     },
 
     async session({ session, token }) {
+      
       return {
         ...session,
         user: {
-          ...session.user,
-          id: token.id,
+          ...token,
         },
       };
     },
-    async redirect() {
-      return "/";
-    },
+
+    
   },
 };

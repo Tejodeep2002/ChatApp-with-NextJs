@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { addUser } from "../Slices/userSlice";
+import { getSession, useSession } from "next-auth/react";
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/user`;
 
@@ -74,8 +75,12 @@ export const apiUserSlice = createApi({
     }),
 
     userInfo: builder.query({
-      query: () => ({
+      query: ({ token }) => ({
         url: "/userInfo",
+        headers: {
+          authorization: token,
+          "Access-Control-Allow-Credentials": "true",
+        },
         method: "GET",
       }),
       providesTags: ["User"],
@@ -99,7 +104,7 @@ export const apiUserSlice = createApi({
 export const {
   useUserRegisterMutation,
   useUserLoginMutation,
-  useUserInfoQuery,
+  useLazyUserInfoQuery,
   useForgetPasswordMutation,
   useResetPasswordMutation,
   useSearchUserMutation,

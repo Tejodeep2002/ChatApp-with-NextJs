@@ -6,7 +6,7 @@ import Login from "@/components/Login/Login"
 const page:React.FC= async () => {
   const session = await getServerSession(authOptions);
 
-  if (session) {
+  if (session?.user.id) {
     redirect("/");
   }
 

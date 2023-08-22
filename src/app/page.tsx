@@ -9,13 +9,13 @@ import ChatArea from "@/components/Home/ChatArea/ChatArea";
 const page:FC = async () => {
   const session = await getServerSession(authOptions);
   
-  if (!session) {
+  if (!session?.user.id) {
     redirect("/login");
   }
   
   return (
     <div className="w-full h-screen flex dark">
-      <SideBar />
+      <SideBar session={session} />
       <MidSection />
       <ChatArea />
     </div>
