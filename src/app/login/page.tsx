@@ -1,4 +1,3 @@
-import LoginOptions from "@/components/Home/LoginOptions";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -17,7 +16,6 @@ const page:React.FC= async () => {
         <span className="text-4xl font-WorkSans color-black">Talk-A-Tive</span>
       </div>
       <div className="bg-white w-full p-4 rounded-lg border-2">
-        {/* <LoginOptions /> */}
         <Login/>
       </div>
     </div>

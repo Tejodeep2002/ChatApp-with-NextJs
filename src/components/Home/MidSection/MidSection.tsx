@@ -1,43 +1,22 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import debounce from "lodash.debounce";
-import {
-  SearchUser,
-  useSearchUserMutation,
-} from "@/lib/redux/api/apiUserSlice";
 import { Button } from "@/components/ui/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import ChatList from "./ChatList";
 import { useFetchChatsQuery } from "@/lib/redux/api/apiChatSlice";
-
-import { useAppSelector } from "@/lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import CreateChatModal from "./Modals/CreateChatModal";
-import { getSender } from "@/lib/utils";
+import { getImage, getSender } from "@/lib/utils";
 import { useSession } from "next-auth/react";
-import { io } from "socket.io-client";
-import axios from "axios";
+import { openCreateChatModal } from "@/lib/redux/Slices/uiSlice";
+import Chats from "./Chats";
+import { updateSelectedChat } from "@/lib/redux/Slices/chatSlice";
 
 const MidSection = () => {
   const [result, setResult] = useState<Chat[]>([]);
-  const [searchUser, isLoading] = useSearchUserMutation();
-  const [isSetting, setIsSettings] = useState<boolean>(false);
   const chats = useAppSelector((state) => state.chats.chats);
   const { data: session } = useSession();
-
-  const socketInitializer = async () => {
-    await fetch(`/api/socket`);
-    const socket = io();
-    socket.on('connect', () => {
-      console.log('connected')
-    })
-    return null
-  };
-
-  useEffect(() => {
-    socketInitializer();
-  }, []);
-
+  const dispatch = useAppDispatch();
   useFetchChatsQuery(undefined);
   const selectedChat = useAppSelector((state) => state.chats.selectedChat);
 
@@ -45,28 +24,17 @@ const MidSection = () => {
     setResult(chats);
   }, [chats]);
 
-  //   const handleSearch = async (chatName: string) => {
-  //     const data = result.filter(
-  //       (chats) =>{
-
-  //         const name = getSender(session?.user, chats).split("");
-  // const chat =
-  //         const data = name.includes(chat)
-  //         if(data){
-  //           chats
-  //         }
-  //       }
-
-  //     );
-
-  //     console.log("Chat search", data);
-  //     setResult(data);
-  //   };
-
-  // const handleSearch = debounce(
-  //   (searchTerm: string) => getSearchUser(searchTerm),
-  //   1000
-  // );
+  const handleSearch = (chatName: string) => {
+    if (chatName !== "") {
+      const lowercase = chatName.toLowerCase();
+      const newChatArray = result.filter((chats) =>
+        getSender(session?.user, chats).toLowerCase().includes(lowercase)
+      );
+      setResult(newChatArray);
+    } else {
+      setResult(chats);
+    }
+  };
 
   return (
     <>
@@ -81,7 +49,7 @@ const MidSection = () => {
             <Button
               variant="pink"
               size="base"
-              onClick={() => setIsSettings(true)}
+              onClick={() => dispatch(openCreateChatModal(true))}
             >
               <FontAwesomeIcon
                 icon={faPenToSquare}
@@ -100,10 +68,19 @@ const MidSection = () => {
             />
           </div>
         </div>
-
-        <ChatList result={result} isLoading={isLoading} />
+        <div className="w-full h-full border border-green-500 overflow-y-scroll scroll-smooth">
+          {result.map((item) => (
+            <Chats
+              id={item.id}
+              image={getImage(session?.user.id, item)}
+              name={getSender(session?.user.id, item)}
+              key={item.id}
+              onAccess={() => dispatch(updateSelectedChat(item))}
+            />
+          ))}
+        </div>
       </div>
-      <CreateChatModal isOpen={isSetting} setIsOpen={() => setIsSettings()} />
+      <CreateChatModal />
     </>
   );
 };

@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import Emoji from "./Emoji";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFaceSmile, faPaperPlane } from "@fortawesome/free-regular-svg-icons";
@@ -7,40 +7,53 @@ import { faLink, faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/Button";
 import { useSendingNewMessageMutation } from "@/lib/redux/api/apiMessage";
 import { toast } from "react-toastify";
-import { useAppSelector } from "@/lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { addNewMessage } from "@/lib/redux/Slices/messageSlice";
+import { pusherClient } from "@/lib/pusher/clientPusher";
+
 
 const TextBar: FC = () => {
   const [textMessage, setTextMessage] = useState<string>();
   const selectedChat = useAppSelector((state) => state.chats.selectedChat);
   const [sendingNewMessage, isLoading] = useSendingNewMessageMutation();
+  const dispatch = useAppDispatch();
 
-  const handleSend = () => {
+  // socket
+  useEffect(() => {
+    pusherClient.subscribe(`message send ${selectedChat?.id}`);
+
+    return () => {
+      pusherClient.unsubscribe(`message send ${selectedChat?.id}`);
+    };
+  }, []);
+
+  const handleSend = async () => {
     if (!textMessage) {
       toast.error("Enter some input");
       return;
     }
     try {
-      const responce = sendingNewMessage({
+      sendingNewMessage({
         content: textMessage,
-        chatId: selectedChat?.id,
+        chatId: selectedChat?.id!,
       });
       setTextMessage("");
+      pusherClient.subscribe(`message send ${selectedChat?.id}`);
+      pusherClient.unsubscribe(`message send ${selectedChat?.id}`);
     } catch (error) {
       console.log("text send", error);
     }
   };
   return (
-    <div className="w-full h-12 p-2 bg-slate-300 flex items-center dark:bg-slate-700">
+    <div className="w-full h-12 p-2 gap-3 bg-slate-300 flex items-center dark:bg-slate-700">
       {/* <Emoji/> */}
 
       <Button variant="pink" size="base">
-        <FontAwesomeIcon icon={faFaceSmile}
-        className="dark:text-white" />
+        <FontAwesomeIcon icon={faFaceSmile} className="dark:text-white" />
       </Button>
 
       <Button variant="pink" size="base">
-        <FontAwesomeIcon icon={faLink}
-        className="dark:text-white" />
+        <FontAwesomeIcon icon={faLink} className="dark:text-white" />
       </Button>
       <input
         type="text"
@@ -53,11 +66,9 @@ const TextBar: FC = () => {
 
       <Button variant="pink" size="base" onClick={handleSend}>
         {textMessage ? (
-          <FontAwesomeIcon icon={faPaperPlane} 
-          className="dark:text-white"/>
+          <FontAwesomeIcon icon={faPaperPlane} className="dark:text-white" />
         ) : (
-          <FontAwesomeIcon icon={faMicrophone} 
-          className="dark:text-white"/>
+          <FontAwesomeIcon icon={faMicrophone} className="dark:text-white" />
         )}
       </Button>
     </div>

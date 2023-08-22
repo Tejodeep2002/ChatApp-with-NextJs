@@ -17,6 +17,11 @@ const chatSlice = createSlice({
     updateChats: (state, action) => {
       state.chats = action.payload;
     },
+    addNewChats: (state, action) => {
+      if (!state.chats.find((c) => c.id === action.payload.id)) {
+        state.chats = [action.payload, ...state.chats];
+      }
+    },
     updateSelectedChat: (state, action) => {
       state.selectedChat = action.payload;
     },
@@ -26,6 +31,10 @@ const chatSlice = createSlice({
   },
 });
 
-export const { updateChats, updateSelectedChat, updateNotification } =
-  chatSlice.actions;
+export const {
+  updateChats,
+  updateSelectedChat,
+  updateNotification,
+  addNewChats,
+} = chatSlice.actions;
 export default chatSlice.reducer;

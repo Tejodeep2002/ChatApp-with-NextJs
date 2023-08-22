@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { addUser } from "../Slices/userSlice";
-import { updateChats } from "../Slices/chatSlice";
+import { addNewChats, updateChats } from "../Slices/chatSlice";
+import { useAppSelector } from "../hooks";
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/chat`;
 
@@ -10,19 +11,14 @@ export const apiChatSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
     credentials: "include",
-    prepareHeaders: (headers, { getState }) => {
-      const state: any = getState();
-      console.log(state);
-      // headers.set("Authorization", `Bearer ${state.user.token}`);
-
+    prepareHeaders: (headers, getState) => {
       headers.set("Content-type", "application/json");
-
       return headers;
     },
   }),
 
   endpoints: (builder) => ({
-    accessChat: builder.mutation<Chats, { userId: string }>({
+    accessChat: builder.mutation<Chat, { userId: string }>({
       query: (body) => ({
         url: "/",
         method: "POST",
@@ -30,11 +26,12 @@ export const apiChatSlice = createApi({
       }),
       async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded }) {
         const response: any = await cacheDataLoaded;
-        dispatch(updateChats(response.data));
+
+        dispatch(addNewChats(response.data));
       },
       invalidatesTags: ["Chat"],
     }),
-    fetchChats: builder.query<Chats, undefined>({
+    fetchChats: builder.query<Chat, undefined>({
       query: () => ({
         url: "/",
         method: "GET",
@@ -45,7 +42,7 @@ export const apiChatSlice = createApi({
       },
       providesTags: ["Chat"],
     }),
-    createGroup: builder.mutation<Chats, CreateGroup>({
+    createGroup: builder.mutation<Chat, CreateGroup>({
       query: (body) => ({
         url: "/group",
         method: "POST",
@@ -53,7 +50,7 @@ export const apiChatSlice = createApi({
       }),
       invalidatesTags: ["Chat"],
     }),
-    updateGroup: builder.mutation<Chats, UpdateGroup>({
+    updateGroup: builder.mutation<Chat, UpdateGroup>({
       query: (body) => ({
         url: "/groupUpdate",
         method: "PUT",
@@ -62,7 +59,7 @@ export const apiChatSlice = createApi({
       invalidatesTags: ["Chat"],
     }),
 
-    addUserGroup: builder.mutation<Chats, UpdateUser>({
+    addUserGroup: builder.mutation<Chat, UpdateUser>({
       query: (body) => ({
         url: "/groupAddUser",
         method: "PUT",
@@ -75,7 +72,7 @@ export const apiChatSlice = createApi({
       invalidatesTags: ["Chat"],
     }),
 
-    removeUserGroup: builder.mutation<Chats, UpdateUser>({
+    removeUserGroup: builder.mutation<Chat, UpdateUser>({
       query: (body) => ({
         url: "/groupRemoveUser",
         method: "PUT",

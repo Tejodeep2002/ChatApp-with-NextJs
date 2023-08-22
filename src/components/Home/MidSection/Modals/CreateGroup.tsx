@@ -8,6 +8,8 @@ import UserListItems from "../UserListItems";
 import UserBadgeItem from "./UserBadgeItem";
 import { useCreateGroupMutation } from "@/lib/redux/api/apiChatSlice";
 import { Button } from "@/components/ui/Button";
+import { openCreateChatModal } from "@/lib/redux/Slices/uiSlice";
+import { useAppDispatch } from "@/lib/redux/hooks";
 
 const CreateGroup = () => {
   const [searchResult, setSeachResult] = useState<SearchUser[]>();
@@ -17,6 +19,7 @@ const CreateGroup = () => {
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [groupImage, setGroupImage] = useState<string>();
+  const dispatch = useAppDispatch();
 
   const getSearchUser = async (user: string) => {
     if (user.length !== 0) {
@@ -52,6 +55,7 @@ const CreateGroup = () => {
         groupImage,
         users: selectedUser.map((user) => user.id),
       });
+      dispatch(openCreateChatModal(false));
     } catch {}
   };
 

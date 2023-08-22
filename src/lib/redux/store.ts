@@ -3,6 +3,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./Slices/userSlice";
 import chatReducer from "./Slices/chatSlice";
 import messageReducer from "./Slices/messageSlice";
+import uiReducer from "./Slices/uiSlice";
 
 import { apiUserSlice } from "./api/apiUserSlice";
 import { apiChatSlice } from "./api/apiChatSlice";
@@ -14,6 +15,7 @@ export const store = configureStore({
     user: userReducer,
     chats: chatReducer,
     message:messageReducer,
+    ui:uiReducer,
     [apiUserSlice.reducerPath]: apiUserSlice.reducer,
     [apiChatSlice.reducerPath]: apiChatSlice.reducer,
     [apiMessageSlice.reducerPath]: apiMessageSlice.reducer,

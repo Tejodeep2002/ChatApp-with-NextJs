@@ -1,7 +1,7 @@
 "use client";
 import { useUserLoginMutation } from "@/lib/redux/api/apiUserSlice";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import { toast } from "react-toastify";
 import { signIn } from "next-auth/react";
 
@@ -20,20 +20,17 @@ const Login: React.FC = () => {
       return;
     }
 
-    try {
-      // await userLogin({ email, password }).unwrap();
-      const promise = await signIn("credentials", {
+    // await userLogin({ email, password }).unwrap();
+    const promise = await signIn(
+      "credentials",
+      {
         email,
         password,
-      });
-      console.log(promise);
-      toast.success("Login successfull");
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      toast.error(`${error}`);
-      setLoading(false);
-    }
+      },
+      { prompt: "login" }
+    );
+
+    setLoading(false);
   };
 
   const signInWithGoogle = async () => {

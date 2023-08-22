@@ -1,17 +1,14 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma/prisma";
-import { auth } from "@/lib/Middleware/auth";
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { pusherServer } from "@/lib/pusher/ServerPusher";
+
 
 export const POST = async (request: NextRequest) => {
-  // const token = new Headers(request.headers).get("authorization");
   const session = await getServerSession(authOptions);
 
-  // if (token === null) {
-  //   return NextResponse.json({ error: "Unexpected Token " }, { status: 400 });
-  // }
-  // const authUser = await auth(token);
   const { chatId, content } = await request.json();
 
   if (!session?.user.id) {
@@ -42,7 +39,6 @@ export const POST = async (request: NextRequest) => {
             },
           },
           content: true,
-
           createdAt: true,
           updatedAt: true,
         },
@@ -89,6 +85,9 @@ export const POST = async (request: NextRequest) => {
       });
 
       const res = { ...message, chat: ChatUpdate };
+
+     
+
       return NextResponse.json(res);
     } catch (error) {
       return NextResponse.json(
@@ -106,14 +105,8 @@ export const POST = async (request: NextRequest) => {
 
 export const GET = async (request: NextRequest) => {
   ////getAllMessages
-  // const token = new Headers(request.headers).get("authorization");
   const session = await getServerSession(authOptions);
   const query = request.nextUrl.searchParams.get("chatId");
-
-  // if (token === null) {
-  //   return NextResponse.json({ error: "Unexpected Token " }, { status: 400 });
-  // }
-  // const authUser = await auth(token);
 
   if (typeof query !== "string" && query !== "") {
     return NextResponse.json(
@@ -132,6 +125,9 @@ export const GET = async (request: NextRequest) => {
     const allMessage = await prisma.message.findMany({
       where: {
         chatMessageId: query,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
 
       select: {

@@ -1,25 +1,15 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma/prisma";
-import { auth } from "@/lib/Middleware/auth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-
+import { pusherServer } from "@/lib/pusher/ServerPusher";
+import { toPusherKey } from "@/lib/utils";
 
 export const GET = async (request: NextRequest) => {
   ///Fetch Chats
   const session = await getServerSession(authOptions);
-  // const token = new Headers(request.headers).get("authorization");
 
-  // if (token === null) {
-  //   return NextResponse.json({ error: "Unexpected Token " }, { status: 400 });
-  // }
-
-  // const authUser = await auth(token);
-
-  // if (!authUser) {
-  //   return NextResponse.json("Not authorized, token failed", { status: 401 });
-  // }
-  if (!session?.user.id ) {
+  if (!session?.user.id) {
     return NextResponse.json("Not authorized, token failed", { status: 401 });
   }
 
@@ -27,6 +17,9 @@ export const GET = async (request: NextRequest) => {
     const isChat = await prisma.chat.findMany({
       where: {
         usersId: { has: session.user.id },
+      },
+      orderBy: {
+        updatedAt: "asc",
       },
       select: {
         id: true,
@@ -75,7 +68,7 @@ export const GET = async (request: NextRequest) => {
         updatedAt: true,
       },
     });
-    console.log(isChat);
+
     return NextResponse.json(isChat);
   } catch (error) {
     return NextResponse.json({ error: "Error Happends" }, { status: 400 });
@@ -85,22 +78,14 @@ export const GET = async (request: NextRequest) => {
 export const POST = async (request: NextRequest) => {
   ///Accessing and create new chats
   const session = await getServerSession(authOptions);
-  // const token = new Headers(request.headers).get("authorization");
   const { userId } = await request.json();
 
-  // if (token === null) {
-  //   return NextResponse.json({ error: "Unexpected Token " }, { status: 400 });
-  // }
-
   if (typeof userId === "string") {
-    // const authUser = await auth(token);
-
     if (!session?.user.id) {
       return NextResponse.json("Not authorized, token failed", {
         status: 401,
       });
-    } else 
-    if (!userId) {
+    } else if (!userId) {
       return NextResponse.json("UserId param not sent with request", {
         status: 400,
       });
@@ -130,11 +115,11 @@ export const POST = async (request: NextRequest) => {
         updatedAt: true,
       },
     });
-    console.log(isChat);
 
     if (isChat.length > 0) {
       return NextResponse.json(isChat[0]);
     }
+
     try {
       const createdChat = await prisma.chat.create({
         data: {
@@ -175,8 +160,10 @@ export const POST = async (request: NextRequest) => {
           updatedAt: true,
         },
       });
+
       return NextResponse.json(FullChat[0]);
     } catch (error) {
+      console.log(error);
       return NextResponse.json(
         { error: "Error Happens !! Chat not created" },
         { status: 401 }

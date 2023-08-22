@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { passwordHasher } from "@/lib/passwordHasher/hasher";
-
-import { auth } from "@/lib/Middleware/auth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export const GET = async (request: NextRequest) => {
   const session = await getServerSession(authOptions);
   const query = request.nextUrl.searchParams.get("search");
-  // const token = new Headers(request.headers).get("authorization");
-
-  // if (token === null) {
-  //   return NextResponse.json({ error: "Unexpected Token " }, { status: 400 });
-  // }
 
   if (!session?.user.name || !session?.user.email) {
     return NextResponse.json("Not authorized, token failed", {
@@ -21,49 +14,38 @@ export const GET = async (request: NextRequest) => {
     });
   }
 
-  if (typeof query !== "string" && query !== "") {
-    return NextResponse.json(
-      { error: "Please give only string value" },
-      { status: 400 }
-    );
-  }
-
-  // const authUser = await auth(token);
-
-  // if (!authUser) {
-  //   return NextResponse.json("Not authorized, token failed", {
-  //     status: 401,
-  //   });
-  // }
-
-  try {
-    const users = await prisma.user.findMany({
-      where: {
-        OR: [
-          {
-            name: {
-              contains: query,
-              notIn: [session.user.name],
+  if (query && query !== "") {
+    try {
+      const users = await prisma.user.findMany({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: query,
+                notIn: [session.user.name],
+              },
             },
-          },
-          {
-            email: {
-              contains: query,
-              notIn: [session.user.email],
+            {
+              email: {
+                contains: query,
+                notIn: [session.user.email],
+              },
             },
-          },
-        ],
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        pic: true,
-      },
-    });
-    return NextResponse.json(users, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(error, { status: 400 });
+          ],
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          pic: true,
+        },
+      });
+      return NextResponse.json(users, { status: 200 });
+    } catch (error) {
+      return NextResponse.json(error, { status: 400 });
+    }
+  } else {
+    return NextResponse.json([], { status: 200 });
   }
 };
 

@@ -2,9 +2,7 @@
 import React, { FC, useEffect, useState } from "react";
 import Chats from "./Chats";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import {
-  useAccessChatMutation,
-} from "@/lib/redux/api/apiChatSlice";
+import { useAccessChatMutation } from "@/lib/redux/api/apiChatSlice";
 
 import { SearchUser } from "@/lib/redux/api/apiUserSlice";
 import { updateSelectedChat } from "@/lib/redux/Slices/chatSlice";
@@ -18,13 +16,10 @@ export interface ChatListProps {
   isLoading: any;
 }
 const ChatList: FC<ChatListProps> = ({ result, isLoading }) => {
- 
   const chats = useAppSelector((state) => state.chats.chats);
   const dispatch = useAppDispatch();
 
   const { data: session, status } = useSession();
-
-  console.log(session);
 
   return (
     <div className="w-full h-full border border-green-500 overflow-y-scroll scroll-smooth">

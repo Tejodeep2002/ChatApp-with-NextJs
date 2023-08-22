@@ -27,12 +27,7 @@ export const apiUserSlice = createApi({
     baseUrl: BASE_URL,
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
-      const state: any = getState();
-      console.log(state);
-      // headers.set("Authorization", `Bearer ${state.user.token}`);
-
       headers.set("Content-type", "application/json");
-
       return headers;
     },
   }),

@@ -42,11 +42,10 @@ const SideBar: FC = () => {
             />
           </Button>
           <Button variant="pink" size='sm'>
-            <Image
+            <img
               src={data?.pic}
               width={7}
               height={7}
-              quality={75}
               alt={"profile"}
               className="w-7 h-7 bg-white dark:border-white border-black border-2 rounded-full"
             />
