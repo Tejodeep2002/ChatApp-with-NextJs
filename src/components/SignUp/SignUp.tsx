@@ -1,6 +1,6 @@
 "use client";
 import { useUserRegisterMutation } from "@/lib/redux/api/apiUserSlice";
-import axios from "axios";
+
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -12,7 +12,7 @@ const SignUp: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   
-  const [pic, setPic] = useState<string>();
+  const [image, setImage] = useState<string>();
   // const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [userRegister, { isLoading, isError, isSuccess }] =
@@ -49,7 +49,7 @@ const SignUp: React.FC = () => {
           
             toast.success("Picture success fully uploaded");
             console.log(data.url.toString());
-            setPic(data.url.toString());
+            setImage(data.url.toString());
           })
           .catch((error) => {
             toast.warning("Picture upload failed");
@@ -78,14 +78,14 @@ const SignUp: React.FC = () => {
     }
 
 
-    console.log(pic)
+    console.log(image)
 
     try {
       const response = await userRegister({
         name,
         email,
         password,
-        pic,
+        image,
       }).unwrap();
       toast.success("Regestration successfull");
 
@@ -97,7 +97,7 @@ const SignUp: React.FC = () => {
       setEmail("");
       setPassword("");
       setConfirmPassword("");
-      setPic("");
+      setImage("");
     } catch (error: any) {
       toast.error(`${error.data.error}`);
       // setLoading(false);

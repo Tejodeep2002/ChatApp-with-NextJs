@@ -13,7 +13,6 @@ const CreateChatModal: FC = () => {
   );
   const dispatch = useAppDispatch();
 
-
   return (
     <div
       className={`fixed ${

@@ -9,12 +9,12 @@ import {
   faVideo,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSession } from "next-auth/react";
+
 import React from "react";
 
 const ChatHeader = () => {
-  const { data: session, status } = useSession();
   const selectedChat = useAppSelector((state) => state.chats.selectedChat);
+  const user = useAppSelector((state) => state.user);
   const dispatch =useAppDispatch()
 
   return (
@@ -25,13 +25,13 @@ const ChatHeader = () => {
         </Button>
         <CircularButton>
           <img
-            src={getImage(session?.user, selectedChat)}
+            src={getImage(user, selectedChat!)}
             alt=""
             className="w-10 h-full border border-black rounded-full"
           />
         </CircularButton>
         <span className="font-bold dark:text-white">
-          {getSender(session?.user, selectedChat)}
+          {getSender(user, selectedChat!)}
         </span>
       </div>
       <div className="flex">

@@ -1,11 +1,13 @@
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { useAppSelector } from "./redux/hooks";
+
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
 
-export const getSender = (logedInUser, chats: Chat) => {
+export const getSender = (logedInUser:User, chats: Chat) => {
   if (chats.isGroupChat) {
     return chats.chatName;
   } else {
@@ -15,13 +17,13 @@ export const getSender = (logedInUser, chats: Chat) => {
   }
 };
 
-export const getImage = (logedInUser, chats: Chat) => {
+export const getImage = (logedInUser:User, chats: Chat) => {
   if (chats.isGroupChat) {
     return chats.chatName;
   } else {
     return chats.users[1].id === logedInUser.id
-      ? chats.users[0].pic
-      : chats.users[1].pic;
+      ? chats.users[0].image
+      : chats.users[1].image;
   }
 };
 

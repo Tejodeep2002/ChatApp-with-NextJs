@@ -3,7 +3,9 @@ interface User {
   id: string;
   name: string;
   email: string;
-  pic: string;
+  password?: string;
+  image: string;
+  accessToken: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -24,8 +26,8 @@ interface Message {
 interface Chat {
   id: string;
   chatName: string;
-  description?:string,
-  groupImage?:string,
+  description?: string;
+  groupImage?: string;
   isGroupChat: boolean;
   users: User[];
   latestMessage?: Message | null;

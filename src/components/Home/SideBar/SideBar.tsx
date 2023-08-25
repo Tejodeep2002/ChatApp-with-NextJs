@@ -1,19 +1,21 @@
 "use client";
-import { useLazyUserInfoQuery } from "@/lib/redux/api/apiUserSlice";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faGear, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { FC, useState,useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import SettingsModal from "./SettingsModal";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { openSettingsModal } from "@/lib/redux/Slices/uiSlice";
+import { useUserInfoQuery } from "@/lib/redux/api/apiUserSlice";
+import { userAfterLogin } from "@/lib/redux/Slices/userSlice";
 
-const SideBar: FC<any> = ({session}) => {
-  const [isSetting, setIsSettings] = useState<boolean>(false);
-  const [trigger, result, lastPromiseInfo] = useLazyUserInfoQuery();
+const SideBar: FC = () => {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.user);
+  const [skip, setSkip] = useState(false);
 
-  useEffect(() => {
-    trigger(session.token)
-  }, [])
+  useUserInfoQuery(undefined);
 
   return (
     <>
@@ -36,7 +38,11 @@ const SideBar: FC<any> = ({session}) => {
           </Button>
         </div>
         <div className=" flex flex-col gap-7 items-center">
-          <Button variant="pink" size="sm" onClick={() => setIsSettings(true)}>
+          <Button
+            variant="pink"
+            size="sm"
+            onClick={() => dispatch(openSettingsModal(true))}
+          >
             <FontAwesomeIcon
               icon={faGear}
               style={{ width: "24px", height: "24px" }}
@@ -45,16 +51,14 @@ const SideBar: FC<any> = ({session}) => {
           </Button>
           <Button variant="pink" size="sm">
             <img
-              src={result.pic}
-              width={7}
-              height={7}
+              src={user.image}
               alt={"profile"}
               className="w-7 h-7 bg-white dark:border-white border-black border-2 rounded-full"
             />
           </Button>
         </div>
       </div>
-      <SettingsModal isOpen={isSetting} setIsOpen={() => setIsSettings()} />
+      <SettingsModal />
     </>
   );
 };

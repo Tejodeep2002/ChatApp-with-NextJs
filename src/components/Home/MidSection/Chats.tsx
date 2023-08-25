@@ -6,10 +6,11 @@ export interface ChatProps {
   id: string;
   image: string;
   name: string;
+  latestMessage:string|undefined
   onAccess: any;
 }
 
-const Chats: FC<ChatProps> = ({ id, image, name, onAccess }) => {
+const Chats: FC<ChatProps> = ({ id, image, name, onAccess,latestMessage }) => {
   return (
     <button
       onClick={onAccess}
@@ -22,9 +23,9 @@ const Chats: FC<ChatProps> = ({ id, image, name, onAccess }) => {
         height={"36"}
         className="w-9 h-9 mr-6 bg-red-700 rounded-full"
       ></img>
-      <div className="flex flex-col">
+      <div className="flex flex-col w-full items-start">
         <span className="text-lg">{name}</span>
-        <span className="text-xs">dwadadwadadad</span>
+        <span className="text-xs truncate">{latestMessage ?latestMessage : ""}</span>
       </div>
     </button>
   );

@@ -2,7 +2,7 @@
 import React, { FC, ReactHTML, ReactNode } from "react";
 import { ReduxProvider } from "../redux/ReduxProvider";
 import { ToastContainer } from "react-toastify";
-import { SessionProvider } from "next-auth/react";
+
 
 interface GlobalProviderProps {
   children: ReactNode;
@@ -11,7 +11,7 @@ interface GlobalProviderProps {
 const GlobalProvider: FC<GlobalProviderProps> = ({ children }) => {
   return (
     <div>
-      <SessionProvider>
+ 
         <ReduxProvider>
           {children}
           <ToastContainer
@@ -27,7 +27,7 @@ const GlobalProvider: FC<GlobalProviderProps> = ({ children }) => {
             theme="colored"
           />
         </ReduxProvider>
-      </SessionProvider>
+    
     </div>
   );
 };

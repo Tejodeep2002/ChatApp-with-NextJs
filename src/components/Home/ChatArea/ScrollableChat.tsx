@@ -1,9 +1,6 @@
-import { pusherClient } from "@/lib/pusher/clientPusher";
 import { useLazyFetchAllMessagesQuery } from "@/lib/redux/api/apiMessage";
 import { useAppSelector } from "@/lib/redux/hooks";
-import { toPusherKey } from "@/lib/utils";
 
-import { useSession } from "next-auth/react";
 import React, { FC, useEffect, useState } from "react";
 
 interface ScrollableChatProps {
@@ -11,8 +8,9 @@ interface ScrollableChatProps {
 }
 
 const ScrollableChat: FC<ScrollableChatProps> = ({ selectedChat }) => {
-  const { data: session, status } = useSession();
+  // const { data: session, status } = useSession();
   const [messageArray, setMessageArray] = useState<Message[]>([]);
+  const user = useAppSelector((state) => state.user);
   const [isLoading, setIsLoading] = useState();
   const [reload, setReload] = useState(false);
 
@@ -21,22 +19,6 @@ const ScrollableChat: FC<ScrollableChatProps> = ({ selectedChat }) => {
   useEffect(() => {
     setMessageArray(messageList);
   }, [messageList]);
-
-  // socket
-  useEffect(() => {
-    const messageHandler = (message) => {
-      console.log(message);
-    };
-
-    pusherClient.bind("incomming-message", messageHandler);
-
-    return () => {
-      //   pusherClient.unsubscribe(
-      //     toPusherKey(`user: ${session?.user.id}:incoming_friend_request`)
-      //   );
-      pusherClient.unbind("incomming-message", messageHandler);
-    };
-  }, []);
 
   useEffect(() => {
     trigger({
@@ -51,10 +33,8 @@ const ScrollableChat: FC<ScrollableChatProps> = ({ selectedChat }) => {
       {messageArray.length !== 0
         ? messageArray.map((message) => (
             <div
-              className={`w-full mt-4 flex   ${
-                session?.user.id === message.sender.id
-                  ? "justify-end"
-                  : "justify-start"
+              className={`w-full mt-4 flex ${
+                user.id === message.sender.id ? "justify-end" : "justify-start"
               }`}
               key={message.id}
             >

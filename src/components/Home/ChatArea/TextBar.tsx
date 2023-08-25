@@ -9,7 +9,7 @@ import { useSendingNewMessageMutation } from "@/lib/redux/api/apiMessage";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { addNewMessage } from "@/lib/redux/Slices/messageSlice";
-import { pusherClient } from "@/lib/pusher/clientPusher";
+
 
 
 const TextBar: FC = () => {
@@ -19,13 +19,6 @@ const TextBar: FC = () => {
   const dispatch = useAppDispatch();
 
   // socket
-  useEffect(() => {
-    pusherClient.subscribe(`message send ${selectedChat?.id}`);
-
-    return () => {
-      pusherClient.unsubscribe(`message send ${selectedChat?.id}`);
-    };
-  }, []);
 
   const handleSend = async () => {
     if (!textMessage) {
@@ -38,8 +31,7 @@ const TextBar: FC = () => {
         chatId: selectedChat?.id!,
       });
       setTextMessage("");
-      pusherClient.subscribe(`message send ${selectedChat?.id}`);
-      pusherClient.unsubscribe(`message send ${selectedChat?.id}`);
+      
     } catch (error) {
       console.log("text send", error);
     }

@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { addUser } from "../Slices/userSlice";
 import { addNewChats, updateChats } from "../Slices/chatSlice";
-import { useAppSelector } from "../hooks";
+import Cookies from "js-cookie";
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/chat`;
 
@@ -11,8 +10,12 @@ export const apiChatSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
     credentials: "include",
-    prepareHeaders: (headers, getState) => {
+    prepareHeaders: (headers, { getState }) => {
+      const state: any = getState();
+
+      console.log(state.user.accessToken);
       headers.set("Content-type", "application/json");
+      headers.set("Authorization", `Bearer ${Cookies.get("token")}`);
       return headers;
     },
   }),
@@ -65,10 +68,6 @@ export const apiChatSlice = createApi({
         method: "PUT",
         body: body,
       }),
-      async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded }) {
-        const response: any = await cacheDataLoaded;
-        dispatch(addUser({ ...response.data, token: arg }));
-      },
       invalidatesTags: ["Chat"],
     }),
 

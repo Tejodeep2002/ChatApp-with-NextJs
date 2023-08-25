@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
@@ -7,15 +7,15 @@ import { useFetchChatsQuery } from "@/lib/redux/api/apiChatSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import CreateChatModal from "./Modals/CreateChatModal";
 import { getImage, getSender } from "@/lib/utils";
-import { useSession } from "next-auth/react";
 import { openCreateChatModal } from "@/lib/redux/Slices/uiSlice";
 import Chats from "./Chats";
 import { updateSelectedChat } from "@/lib/redux/Slices/chatSlice";
+import { useUserInfoQuery } from "@/lib/redux/api/apiUserSlice";
 
-const MidSection = () => {
+const MidSection: FC<any> = ({ session }) => {
   const [result, setResult] = useState<Chat[]>([]);
   const chats = useAppSelector((state) => state.chats.chats);
-  const { data: session } = useSession();
+  const user = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
   useFetchChatsQuery(undefined);
   const selectedChat = useAppSelector((state) => state.chats.selectedChat);
@@ -72,8 +72,9 @@ const MidSection = () => {
           {result.map((item) => (
             <Chats
               id={item.id}
-              image={getImage(session?.user.id, item)}
-              name={getSender(session?.user.id, item)}
+              image={getImage(user, item)}
+              name={getSender(user, item)}
+              latestMessage={item.latestMessage?.content}
               key={item.id}
               onAccess={() => dispatch(updateSelectedChat(item))}
             />

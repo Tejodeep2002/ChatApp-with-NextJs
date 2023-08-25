@@ -1,15 +1,8 @@
 // import LoginOptions from "@/components/Home/LoginOptions";
 import SignUp from "@/components/SignUp/SignUp";
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
 
-const Home: React.FC = async () => {
-  const session = await getServerSession(authOptions);
+const Page: React.FC = async () => {
 
-  if (session) {
-    redirect("/");
-  }
 
   return (
     <div className="w-full m-auto flex flex-col justify-center items-center max-w-lg">
@@ -23,4 +16,4 @@ const Home: React.FC = async () => {
     </div>
   );
 };
-export default Home;
+export default Page;

@@ -11,6 +11,7 @@ const buttonVariants = cva("rounded-md flex items-center justify-center", {
     },
     
     size: {
+      lg:"w-fit h-fit p-2",
       base: "w-14 h-9",
       sm: "w-10 h-10",
     },

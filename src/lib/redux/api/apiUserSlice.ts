@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { addUser } from "../Slices/userSlice";
-import { getSession, useSession } from "next-auth/react";
+import { userInfo } from "../Slices/userSlice";
+import Cookies from "js-cookie";
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/user`;
 
@@ -11,14 +11,14 @@ export interface Login {
 
 export interface Register extends Login {
   name: string;
-  pic: string | unknown;
+  image: string | unknown;
 }
 
 export interface SearchUser {
   id: string;
   name: string;
   email: string;
-  pic: string;
+  image: string;
 }
 
 export const apiUserSlice = createApi({
@@ -28,7 +28,9 @@ export const apiUserSlice = createApi({
     baseUrl: BASE_URL,
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
+      const state: any = getState();
       headers.set("Content-type", "application/json");
+      headers.set("Authorization", `Bearer ${Cookies.get("token")}`);
       return headers;
     },
   }),
@@ -49,10 +51,13 @@ export const apiUserSlice = createApi({
         body: body,
       }),
       invalidatesTags: ["User"],
-      async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded }) {
-        const response: any = await cacheDataLoaded;
-        dispatch(addUser(response.data));
-      },
+    }),
+    userLogout: builder.mutation<string, undefined>({
+      query: () => ({
+        url: "/logout",
+        method: "GET",
+      }),
+      invalidatesTags: ["User"],
     }),
     forgetPassword: builder.mutation<string, { email: string }>({
       query: (body) => ({
@@ -75,18 +80,14 @@ export const apiUserSlice = createApi({
     }),
 
     userInfo: builder.query({
-      query: ({ token }) => ({
+      query: () => ({
         url: "/userInfo",
-        headers: {
-          authorization: token,
-          "Access-Control-Allow-Credentials": "true",
-        },
         method: "GET",
       }),
       providesTags: ["User"],
       async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded }) {
         const response: any = await cacheDataLoaded;
-        dispatch(addUser({ ...response.data }));
+        dispatch(userInfo({ ...response.data }));
       },
     }),
 
@@ -104,7 +105,8 @@ export const apiUserSlice = createApi({
 export const {
   useUserRegisterMutation,
   useUserLoginMutation,
-  useLazyUserInfoQuery,
+  useUserLogoutMutation,
+  useUserInfoQuery,
   useForgetPasswordMutation,
   useResetPasswordMutation,
   useSearchUserMutation,
