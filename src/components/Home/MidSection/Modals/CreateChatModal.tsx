@@ -15,14 +15,12 @@ const CreateChatModal: FC = () => {
 
   return (
     <div
-      className={`fixed ${
-        selectedChat ? "hidden" : "flex"
-      } w-full h-full  transform ${
+      className={`fixed flex w-full h-full  transform ${
         isOpenCreateChatModal ? "  -translate-y-0" : " -translate-y-full"
       } transition-transform duration-300 ease-in-out`}
     >
       <div
-        className="w-full h-full  "
+        className="w-full h-full"
         onClick={() => dispatch(openCreateChatModal(false))}
       ></div>
       <div

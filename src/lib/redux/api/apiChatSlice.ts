@@ -13,7 +13,7 @@ export const apiChatSlice = createApi({
     prepareHeaders: (headers, { getState }) => {
       const state: any = getState();
 
-      console.log(state.user.accessToken);
+      
       headers.set("Content-type", "application/json");
       headers.set("Authorization", `Bearer ${Cookies.get("token")}`);
       return headers;

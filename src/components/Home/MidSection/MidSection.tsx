@@ -28,7 +28,7 @@ const MidSection: FC<any> = ({ session }) => {
     if (chatName !== "") {
       const lowercase = chatName.toLowerCase();
       const newChatArray = result.filter((chats) =>
-        getSender(session?.user, chats).toLowerCase().includes(lowercase)
+        getSender(user, chats).toLowerCase().includes(lowercase)
       );
       setResult(newChatArray);
     } else {

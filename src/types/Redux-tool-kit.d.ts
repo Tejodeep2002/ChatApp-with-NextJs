@@ -41,7 +41,7 @@ interface Chat {
 interface CreateGroup {
   name: string;
   description: string;
-  groupImage: string;
+  groupImage: string | undefined;
   users: string[];
 }
 

@@ -10,6 +10,7 @@ import { useCreateGroupMutation } from "@/lib/redux/api/apiChatSlice";
 import { Button } from "@/components/ui/Button";
 import { openCreateChatModal } from "@/lib/redux/Slices/uiSlice";
 import { useAppDispatch } from "@/lib/redux/hooks";
+import { toast } from "react-toastify";
 
 const CreateGroup = () => {
   const [searchResult, setSeachResult] = useState<SearchUser[]>();
@@ -49,14 +50,17 @@ const CreateGroup = () => {
 
   const handleSubmit = () => {
     try {
-      const responce = createGroup({
+      createGroup({
         name,
         description,
         groupImage,
         users: selectedUser.map((user) => user.id),
-      });
+      }).unwrap();
       dispatch(openCreateChatModal(false));
-    } catch {}
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.data.error);
+    }
   };
 
   return (
@@ -65,7 +69,7 @@ const CreateGroup = () => {
         <div className="flex gap-3 items-center">
           <div className="w-10 h-10 rounded-full border border-black"></div>
           <label htmlFor="">Add Group Image</label>
-          <Button variant="primary" onClick={() => handleSubmit}>
+          <Button variant="pink" onClick={handleSubmit}>
             Create
           </Button>
         </div>
@@ -114,7 +118,7 @@ const CreateGroup = () => {
           ? searchResult.map((item) => (
               <UserListItems
                 id={item.id}
-                image={item.pic}
+                image={item.image}
                 name={item.name}
                 key={item.id}
                 onClick={() => handleGroup(item)}

@@ -18,12 +18,12 @@ export const apiMessageSlice = createApi({
   }),
 
   endpoints: (builder) => ({
-    fetchAllMessages: builder.query<Message, { chatId: string }>({
+    fetchAllMessages: builder.mutation<Message, { chatId: string }>({
       query: ({ chatId }) => ({
         url: `?chatId=${chatId}`,
         method: "GET",
       }),
-      providesTags: ["Message"],
+      invalidatesTags: ["Message"],
       async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded }) {
         const response: any = await cacheDataLoaded;
         dispatch(updateMessage([...response.data]));
@@ -49,5 +49,5 @@ export const apiMessageSlice = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useLazyFetchAllMessagesQuery, useSendingNewMessageMutation } =
+export const { useFetchAllMessagesMutation, useSendingNewMessageMutation } =
   apiMessageSlice;

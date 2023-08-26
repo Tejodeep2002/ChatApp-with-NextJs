@@ -6,10 +6,6 @@ import ChatArea from "./ChatArea/ChatArea";
 
 
 const Home = () => {
-  // useEffect(() => {
-  //   const cookieValue = Cookies.get("token");
-  //   console.log(cookieValue);
-  // }, []);
 
   return (
     <div className="w-full h-screen flex dark">

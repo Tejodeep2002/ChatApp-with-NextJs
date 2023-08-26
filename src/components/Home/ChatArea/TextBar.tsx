@@ -10,10 +10,8 @@ import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { addNewMessage } from "@/lib/redux/Slices/messageSlice";
 
-
-
-const TextBar: FC = () => {
-  const [textMessage, setTextMessage] = useState<string>();
+const TextBar = ({ socket }: { socket: any }) => {
+  const [textMessage, setTextMessage] = useState<string>("");
   const selectedChat = useAppSelector((state) => state.chats.selectedChat);
   const [sendingNewMessage, isLoading] = useSendingNewMessageMutation();
   const dispatch = useAppDispatch();
@@ -26,12 +24,14 @@ const TextBar: FC = () => {
       return;
     }
     try {
-      sendingNewMessage({
+      const responce = await sendingNewMessage({
         content: textMessage,
         chatId: selectedChat?.id!,
-      });
+      }).unwrap();
+      // setMessageList([responce,...messageList])
+      console.log(responce)
       setTextMessage("");
-      
+      socket.emit("new message", responce);
     } catch (error) {
       console.log("text send", error);
     }
@@ -39,7 +39,6 @@ const TextBar: FC = () => {
   return (
     <div className="w-full h-12 p-2 gap-3 bg-slate-300 flex items-center dark:bg-slate-700">
       {/* <Emoji/> */}
-
       <Button variant="pink" size="base">
         <FontAwesomeIcon icon={faFaceSmile} className="dark:text-white" />
       </Button>
