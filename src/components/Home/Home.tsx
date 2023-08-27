@@ -6,7 +6,6 @@ import ChatArea from "./ChatArea/ChatArea";
 
 
 const Home = () => {
-
   return (
     <div className="w-full h-screen flex dark">
       <SideBar />
