@@ -6,6 +6,7 @@ import { openSettingsModal } from "@/lib/redux/Slices/uiSlice";
 import { useUserLogoutMutation } from "@/lib/redux/api/apiUserSlice";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const SettingsModal: FC = () => {
   const settingsModal = useAppSelector((state) => state.ui.settingsModal);
@@ -17,6 +18,7 @@ const SettingsModal: FC = () => {
   const Signout = async () => {
     try {
       const responce = await userLogout(undefined).unwrap();
+      Cookies.remove("token")
       console.log("Logout", responce);
       dispatch(openSettingsModal(false))
       toast.success("Logout SuccessFull");
