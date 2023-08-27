@@ -29,7 +29,7 @@ const Login: FC = () => {
       console.log(data);
 
       localStorage.setItem("token", JSON.stringify(data));
-      Cookies.set("token",data.accessToken)
+      Cookies.set("token",data)
       router.push("/");
       setEmail("");
       setPassword("");
