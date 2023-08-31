@@ -2,7 +2,8 @@
 import React, { FC, ReactHTML, ReactNode } from "react";
 import { ReduxProvider } from "../redux/ReduxProvider";
 import { ToastContainer } from "react-toastify";
-
+import PeerProvider from "./Peer";
+import SocketProvider from "./socket";
 
 interface GlobalProviderProps {
   children: ReactNode;
@@ -11,23 +12,25 @@ interface GlobalProviderProps {
 const GlobalProvider: FC<GlobalProviderProps> = ({ children }) => {
   return (
     <div>
- 
-        <ReduxProvider>
-          {children}
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="colored"
-          />
-        </ReduxProvider>
-    
+      <PeerProvider>
+        <SocketProvider>
+          <ReduxProvider>
+            {children}
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
+          </ReduxProvider>
+        </SocketProvider>
+      </PeerProvider>
     </div>
   );
 };

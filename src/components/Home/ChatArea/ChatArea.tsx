@@ -1,70 +1,75 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import TextBar from "./TextBar";
-import ChatHeader from "./ChatHeader";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import ScrollableChat from "./ScrollableChat";
-import { io } from "socket.io-client";
-import { useFetchAllMessagesMutation } from "@/lib/redux/api/apiMessage";
-import { toast } from "react-toastify";
+import MessageChatPanel from "./Pannels/MessageChatPanel/MessageChatPanel";
+import VideoCallPanel from "./Pannels/VideoCallPanel/VideoCallPanel";
+import { updateSelectedChat } from "@/lib/redux/Slices/chatSlice";
+import { useSocket } from "@/lib/Providers/socket";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPhone, faPhoneSlash } from "@fortawesome/free-solid-svg-icons";
+import { usePeer } from "@/lib/Providers/Peer";
+import { openVideoCallPanel } from "@/lib/redux/Slices/uiSlice";
 
-import { addNewMessage, updateMessage } from "@/lib/redux/Slices/messageSlice";
-
-var socket: any;
 const serverURL = process.env.NEXT_PUBLIC_API_URL!;
+
 const ChatArea = () => {
-  const [socketConnected, setSocketConnected] = useState<boolean>(false);
+  const [callFrom, setCallFrom] = useState<string>("");
+  const [offer, setOffer] = useState();
+  const [incomingCall, setIncomingCall] = useState<boolean>();
+  const [selectedChatId, setSelectedChatId] = useState<string>();
   const selectedChat = useAppSelector((state) => state.chats.selectedChat);
-  const messages = useAppSelector((state) => state.message.message);
-  const chats = useAppSelector((state) => state.chats.chats);
   const user = useAppSelector((state) => state.user);
+  const isOpenVideoCallPanel = useAppSelector(
+    (state) => state.ui.videoCallPanel
+  );
   const dispatch = useAppDispatch();
-  const [fetchAllMessages, { isLoading }] = useFetchAllMessagesMutation();
+  const { socket } = useSocket();
+  const { createAnswer, setRemoteId } = usePeer();
 
-  useEffect(() => {
-    socket = io(serverURL);
-  }, []);
-
+  // User Join his own Room
   useEffect(() => {
     if (user.id.length !== 0) {
       socket.emit("setup", user);
-      socket.on("connection", () => setSocketConnected(true));
     }
-  }, [user]);
+  }, [user, socket]);
 
-  const fetchMessages = async () => {
-    if (!selectedChat) {
-      return;
-    }
+  const handleIncomingCall = useCallback(
+    (data: any) => {
+      const { callFrom, selectedChatId, offer } = data;
+      setIncomingCall(true);
+      setCallFrom(callFrom);
+      
+      setOffer(offer);
+      setSelectedChatId(selectedChatId);
+      console.log("Incomming Call", { callFrom, selectedChatId, offer });
+    },
+    []
+  );
 
-    try {
-      const responce = await fetchAllMessages({
-        chatId: selectedChat?.id,
-      }).unwrap();
-      socket.emit("join chat", selectedChat.id);
-    } catch (error) {
-      console.log(error);
-      toast.error("Error occuere");
-    }
+  //Incomming Call
+  useEffect(() => {
+    socket.on("incoming-call", handleIncomingCall);
+
+    return () => {
+      socket.off("incoming-call", handleIncomingCall);
+    };
+  }, [handleIncomingCall, socket]);
+
+  //Call Rejected
+  const callRejected = () => {
+    socket.emit("call-Rejected", callFrom);
+    setIncomingCall(false);
   };
 
-  useEffect(() => {
-    if (user.id.length !== 0) {
-      console.log("Message Recieved Reload");
-      socket.on("message received", (newMessageReceived: Message) => {
-        console.log("Message Recieved");
-        if (!selectedChat || selectedChat.id !== newMessageReceived.chat.id) {
-          //give notification
-        } else {
-          dispatch(updateMessage([newMessageReceived, ...messages]));
-        }
-      });
-    }
-  }, [messages]);
+  //Call Accepted
+  const callAccepted = async () => {
+    const answer = await createAnswer(offer);
 
-  useEffect(() => {
-    fetchMessages();
-  }, [selectedChat]);
+    socket.emit("call-Accepted", { callFrom, selectedChatId, answer });
+    setRemoteId(callFrom);
+    dispatch(openVideoCallPanel(true));
+    setIncomingCall(false);
+  };
 
   return (
     <div
@@ -72,10 +77,45 @@ const ChatArea = () => {
     >
       {selectedChat ? (
         <div className="w-full h-full flex flex-col justify-between">
-          <ChatHeader />
-          {isLoading ? <h1>Loading</h1> : <ScrollableChat />}
+          {isOpenVideoCallPanel ? (
+            <VideoCallPanel socket={socket} />
+          ) : (
+            <MessageChatPanel socket={socket} />
+          )}
+          <div
+            className={` absolute right-0 top-16 ${
+              incomingCall ? "flex" : "hidden"
+            }  bg-white dark:bg-slate-600 w-64 h-24 border border-r-emerald-500 flex items-center justify-evenly`}
+          >
+            <img
+              src={callFrom.image}
+              alt=""
+              srcSet=""
+              className="w-12 h-12 border rounded-full "
+            />
 
-          <TextBar socket={socket} />
+            <div className="flex flex-col">
+              <span className="font-bold text-lg text-white">
+                {callFrom.name}
+              </span>
+
+              <div className="flex gap-5">
+                <button
+                  className="rounded-full w-8 h-8 bg-green-600"
+                  onClick={callAccepted}
+                >
+                  <FontAwesomeIcon icon={faPhone} />
+                </button>
+
+                <button
+                  className="rounded-full w-8 h-8 bg-rose-600"
+                  onClick={callRejected}
+                >
+                  <FontAwesomeIcon icon={faPhoneSlash} />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         <div>No chat selected</div>
