@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { usePeer } from "@/lib/Providers/Peer";
 import { openVideoCallPanel } from "@/lib/redux/Slices/uiSlice";
 import ReactPlayer from "react-player";
+import { Button } from "@/components/ui/Button";
 
 const VideoCallPanel = ({ socket }: { socket: any }) => {
   const [inputToggle, setInputToggle] = useState({ video: true, audio: false });
@@ -133,21 +134,21 @@ const VideoCallPanel = ({ socket }: { socket: any }) => {
           <ReactPlayer url={remoteStream} height={"93%"} playing />
           <div className="w-full h-[7%] bottom-0 bg-white dark:bg-slate-700 flex justify-center items-center">
             <div className="flex gap-4">
-              <button className="rounded-full w-10 h-10 bg-blue-500">
+              <Button className="rounded-full w-10 h-10 bg-blue-500">
                 <FontAwesomeIcon icon={faCamera} />
-              </button>
-              <button className="rounded-full w-10 h-10 bg-blue-500">
+              </Button>
+              <Button className="rounded-full w-10 h-10 bg-blue-500">
                 <FontAwesomeIcon icon={faMicrophone} />
-              </button>
-              <button className="rounded-full w-10 h-10 bg-rose-600">
+              </Button>
+              <Button className="rounded-full w-10 h-10 bg-rose-600">
                 <FontAwesomeIcon icon={faPhoneSlash} />
-              </button>
-              <button
+              </Button>
+              <Button
                 className="rounded-full w-10 h-10 bg-rose-600"
                 onClick={(e) => sendStream(myStream)}
               >
                 Send my video
-              </button>
+              </Button>
             </div>
           </div>
         </div>

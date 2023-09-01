@@ -3,17 +3,23 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import MessageChatPanel from "./Pannels/MessageChatPanel/MessageChatPanel";
 import VideoCallPanel from "./Pannels/VideoCallPanel/VideoCallPanel";
-import { updateSelectedChat } from "@/lib/redux/Slices/chatSlice";
-import { useSocket } from "@/lib/Providers/socket";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPhone, faPhoneSlash } from "@fortawesome/free-solid-svg-icons";
 import { usePeer } from "@/lib/Providers/Peer";
 import { openVideoCallPanel } from "@/lib/redux/Slices/uiSlice";
+import Image from "next/image";
+import { Button } from "@/components/ui/Button";
+import { useSocket } from "@/lib/Providers/Socket";
 
 const serverURL = process.env.NEXT_PUBLIC_API_URL!;
 
+export interface CallFrom{
+  id:string,
+  name:string,
+  image:string
+}
 const ChatArea = () => {
-  const [callFrom, setCallFrom] = useState<string>("");
+  const [callFrom, setCallFrom] = useState<CallFrom>({} as CallFrom);
   const [offer, setOffer] = useState();
   const [incomingCall, setIncomingCall] = useState<boolean>();
   const [selectedChatId, setSelectedChatId] = useState<string>();
@@ -87,10 +93,11 @@ const ChatArea = () => {
               incomingCall ? "flex" : "hidden"
             }  bg-white dark:bg-slate-600 w-64 h-24 border border-r-emerald-500 flex items-center justify-evenly`}
           >
-            <img
+            <Image
               src={callFrom.image}
               alt=""
-              srcSet=""
+              width={"48"}
+              height={"48"}
               className="w-12 h-12 border rounded-full "
             />
 
@@ -100,19 +107,19 @@ const ChatArea = () => {
               </span>
 
               <div className="flex gap-5">
-                <button
+                <Button
                   className="rounded-full w-8 h-8 bg-green-600"
                   onClick={callAccepted}
                 >
                   <FontAwesomeIcon icon={faPhone} />
-                </button>
+                </Button>
 
-                <button
+                <Button
                   className="rounded-full w-8 h-8 bg-rose-600"
                   onClick={callRejected}
                 >
                   <FontAwesomeIcon icon={faPhoneSlash} />
-                </button>
+                </Button>
               </div>
             </div>
           </div>

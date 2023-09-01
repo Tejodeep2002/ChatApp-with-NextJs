@@ -1,6 +1,7 @@
 import { Button, CircularButton } from "@/components/ui/Button";
 import { usePeer } from "@/lib/Providers/Peer";
-import { useSocket } from "@/lib/Providers/socket";
+import { useSocket } from "@/lib/Providers/Socket";
+
 import { updateSelectedChat } from "@/lib/redux/Slices/chatSlice";
 import { openVideoCallPanel } from "@/lib/redux/Slices/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";

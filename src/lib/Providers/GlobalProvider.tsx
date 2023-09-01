@@ -3,7 +3,8 @@ import React, { FC, ReactHTML, ReactNode } from "react";
 import { ReduxProvider } from "../redux/ReduxProvider";
 import { ToastContainer } from "react-toastify";
 import PeerProvider from "./Peer";
-import SocketProvider from "./socket";
+import SocketProvider from "./Socket";
+
 
 interface GlobalProviderProps {
   children: ReactNode;

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { useSendingNewMessageMutation } from "@/lib/redux/api/apiMessage";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { addNewMessage } from "@/lib/redux/Slices/messageSlice";
+
 
 const TextBar = ({ socket }: { socket: any }) => {
   const [textMessage, setTextMessage] = useState<string>("");
