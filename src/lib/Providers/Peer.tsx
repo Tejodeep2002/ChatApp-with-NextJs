@@ -39,14 +39,13 @@ const servers = {
 const PeerProvider: FC<PeerProviderProps> = ({ children }) => {
   const [remoteStream, setRemoteStream] = useState();
   const [remoteId, setRemoteId] = useState();
-  const [peer,setPeer] = useState< RTCPeerConnection>({} as  RTCPeerConnection)
+  const [peer, setPeer] = useState<RTCPeerConnection>({} as RTCPeerConnection);
 
-  
-  
-  useEffect(()=>{
-    const peer =  new RTCPeerConnection(servers);
-    setPeer(peer)
-  },[])
+  if (typeof window !== "undefined") {
+    // Code that uses RTCPeerConnection here
+    const peer = new RTCPeerConnection(servers);
+    setPeer(peer);
+  }
 
   const createOffer = async () => {
     const offer = await peer.createOffer();
@@ -76,10 +75,8 @@ const PeerProvider: FC<PeerProviderProps> = ({ children }) => {
   const handleTrackEvent = useCallback((event: any) => {
     const streams = event.streams;
     setRemoteStream(streams[0]);
-    console.log("STREAMS",streams)
+    console.log("STREAMS", streams);
   }, []);
-
-
 
   useEffect(() => {
     peer.addEventListener("track", handleTrackEvent);
