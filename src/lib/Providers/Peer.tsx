@@ -39,9 +39,14 @@ const servers = {
 const PeerProvider: FC<PeerProviderProps> = ({ children }) => {
   const [remoteStream, setRemoteStream] = useState();
   const [remoteId, setRemoteId] = useState();
+  const [peer,setPeer] = useState< RTCPeerConnection>({} as  RTCPeerConnection)
 
   
-  const peer = useMemo(() => new RTCPeerConnection(servers), []);
+  
+  useEffect(()=>{
+    const peer =  new RTCPeerConnection(servers);
+    setPeer(peer)
+  },[])
 
   const createOffer = async () => {
     const offer = await peer.createOffer();
